@@ -75,26 +75,6 @@ function PureMultimodalInput({
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    if (textareaRef.current) {
-      adjustHeight();
-    }
-  }, []);
-
-  const adjustHeight = () => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`;
-    }
-  };
-
-  const resetHeight = () => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = '98px';
-    }
-  };
-
   const [localStorageInput, setLocalStorageInput] = useLocalStorage(
     'input',
     '',
@@ -106,7 +86,6 @@ function PureMultimodalInput({
       // Prefer DOM value over localStorage to handle hydration
       const finalValue = domValue || localStorageInput || '';
       setInput(finalValue);
-      adjustHeight();
     }
     // Only run once after hydration
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -118,7 +97,6 @@ function PureMultimodalInput({
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
-    adjustHeight();
   };
 
   const submitForm = useCallback(() => {
@@ -130,7 +108,6 @@ function PureMultimodalInput({
 
     setAttachments([]);
     setLocalStorageInput('');
-    resetHeight();
 
     if (width && width > 768) {
       textareaRef.current?.focus();
@@ -147,7 +124,7 @@ function PureMultimodalInput({
   if (!mounted) {
     return (
       <div className="relative w-full flex flex-col gap-4">
-        <div className="animate-pulse h-24 bg-muted-foreground/10 rounded-lg" />
+        <div className="animate-pulse h-[140px] bg-muted-foreground/10 rounded-2xl" />
       </div>
     );
   }
@@ -164,7 +141,7 @@ function PureMultimodalInput({
         value={input}
         onChange={handleInput}
         className={cx(
-          'min-h-[80px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl !text-base bg-background dark:bg-muted px-4 py-4 pb-12 border-zinc-200 dark:border-zinc-700 focus-visible:border-primary dark:focus-visible:border-primary',
+          'h-[140px] max-h-[calc(75dvh)] overflow-y-auto resize-none rounded-2xl !text-base bg-background dark:bg-muted px-4 py-4 pb-12 border-zinc-200 dark:border-zinc-700 focus-visible:border-primary dark:focus-visible:border-primary',
           className,
         )}
         rows={3}

@@ -334,7 +334,7 @@ function PureArtifact({
                   artifactStatus={artifact.status}
                 />
 
-                <form className="flex flex-row gap-2 relative items-end w-full px-4 pb-4">
+                <form className="flex flex-row gap-2 relative items-end w-full px-4 pb-4 md:pb-6">
                   <MultimodalInput
                     chatId={chatId}
                     input={input}
