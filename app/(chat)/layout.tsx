@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { AppSidebar } from '@/components/app-sidebar';
 import { MedicationsSidebar } from '@/components/medications-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { MedicationsSidebarProvider } from '@/components/ui/medications-sidebar-context';
+import { RightSidebarProvider } from '@/components/ui/right-sidebar-context';
 
 import { auth } from '../(auth)/auth';
 import Script from 'next/script';
@@ -17,7 +17,7 @@ export default async function Layout({
 }) {
   const [session, cookieStore] = await Promise.all([auth(), cookies()]);
   const isCollapsed = cookieStore.get('sidebar:state')?.value !== 'true';
-  const isMedicationsCollapsed = cookieStore.get('medications:state')?.value !== 'true';
+  const isRightCollapsed = cookieStore.get('right-sidebar:state')?.value !== 'true';
 
   return (
     <>
@@ -27,13 +27,13 @@ export default async function Layout({
       />
       <div className="flex">
         <SidebarProvider defaultOpen={!isCollapsed}>
-          <MedicationsSidebarProvider defaultOpen={!isMedicationsCollapsed}>
+          <RightSidebarProvider defaultOpen={!isRightCollapsed}>
             <div className="flex w-full">
               <AppSidebar user={session?.user} />
               <SidebarInset>{children}</SidebarInset>
               <MedicationsSidebar user={session?.user} />
             </div>
-          </MedicationsSidebarProvider>
+          </RightSidebarProvider>
         </SidebarProvider>
       </div>
     </>

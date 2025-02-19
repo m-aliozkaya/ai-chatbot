@@ -4,7 +4,6 @@ import type { User } from 'next-auth';
 import { PillIcon } from 'lucide-react';
 
 import {
-  Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarMenu,
@@ -14,7 +13,8 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar';
-import { useMedicationsSidebar } from './ui/medications-sidebar-context';
+import { RightSidebar } from './ui/right-sidebar';
+import { useRightSidebar } from './ui/right-sidebar-context';
 
 // This is a temporary mock data, you should replace it with real data from your backend
 const mockMedications = [
@@ -24,12 +24,10 @@ const mockMedications = [
 ];
 
 export function MedicationsSidebar({ user }: { user: User | undefined }) {
+  const { toggleSidebar } = useRightSidebar();
+
   return (
-    <Sidebar 
-      side="right" 
-      collapsible="offcanvas"
-      className="border-l"
-    >
+    <RightSidebar>
       <SidebarHeader>
         <SidebarMenu>
           <div className="flex flex-row justify-between items-center">
@@ -58,7 +56,14 @@ export function MedicationsSidebar({ user }: { user: User | undefined }) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarRail />
-    </Sidebar>
+      <button
+        data-sidebar="rail"
+        aria-label="Toggle Sidebar"
+        tabIndex={-1}
+        onClick={toggleSidebar}
+        title="Toggle Sidebar"
+        className="absolute inset-y-0 left-0 z-20 hidden w-4 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border cursor-w-resize sm:flex"
+      />
+    </RightSidebar>
   );
 } 

@@ -3,10 +3,10 @@
 import { PanelRightIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useMedicationsSidebar } from './ui/medications-sidebar-context';
+import { useRightSidebar } from './ui/right-sidebar-context';
 
 export function MedicationsToggle() {
-  const { toggleSidebar } = useMedicationsSidebar();
+  const { toggleSidebar } = useRightSidebar();
 
   return (
     <Tooltip>

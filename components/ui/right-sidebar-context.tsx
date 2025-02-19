@@ -2,18 +2,18 @@
 
 import * as React from 'react';
 
-type MedicationsSidebarContext = {
+type RightSidebarContext = {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   toggleSidebar: () => void;
 };
 
-const MedicationsSidebarContext = React.createContext<MedicationsSidebarContext | null>(null);
+const RightSidebarContext = React.createContext<RightSidebarContext | null>(null);
 
-const SIDEBAR_COOKIE_NAME = 'medications:state';
+const SIDEBAR_COOKIE_NAME = 'right-sidebar:state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 1 week
 
-export function MedicationsSidebarProvider({
+export function RightSidebarProvider({
   children,
   defaultOpen = true,
 }: {
@@ -41,16 +41,16 @@ export function MedicationsSidebarProvider({
   );
 
   return (
-    <MedicationsSidebarContext.Provider value={value}>
+    <RightSidebarContext.Provider value={value}>
       {children}
-    </MedicationsSidebarContext.Provider>
+    </RightSidebarContext.Provider>
   );
 }
 
-export function useMedicationsSidebar() {
-  const context = React.useContext(MedicationsSidebarContext);
+export function useRightSidebar() {
+  const context = React.useContext(RightSidebarContext);
   if (!context) {
-    throw new Error('useMedicationsSidebar must be used within a MedicationsSidebarProvider');
+    throw new Error('useRightSidebar must be used within a RightSidebarProvider');
   }
   return context;
 } 
