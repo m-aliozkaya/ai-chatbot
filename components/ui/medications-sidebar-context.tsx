@@ -10,6 +10,9 @@ type MedicationsSidebarContext = {
 
 const MedicationsSidebarContext = React.createContext<MedicationsSidebarContext | null>(null);
 
+const SIDEBAR_COOKIE_NAME = 'medications:state';
+const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 1 week
+
 export function MedicationsSidebarProvider({
   children,
   defaultOpen = true,
@@ -20,7 +23,12 @@ export function MedicationsSidebarProvider({
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
   const toggleSidebar = React.useCallback(() => {
-    setIsOpen((prev) => !prev);
+    setIsOpen((prev) => {
+      const newState = !prev;
+      // Update cookie when sidebar state changes
+      document.cookie = `${SIDEBAR_COOKIE_NAME}=${newState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+      return newState;
+    });
   }, []);
 
   const value = React.useMemo(
