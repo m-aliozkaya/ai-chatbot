@@ -248,14 +248,14 @@ function PureMultimodalInput({
 
       <Textarea
         ref={textareaRef}
-        placeholder="Send a message..."
+        placeholder="Mesajınızı yazın..."
         value={input}
         onChange={handleInput}
         className={cx(
-          'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl !text-base bg-muted pb-10 dark:border-zinc-700',
+          'min-h-[80px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl !text-base bg-background dark:bg-muted px-4 py-4 pb-12 border-zinc-200 dark:border-zinc-700 focus-visible:border-primary dark:focus-visible:border-primary',
           className,
         )}
-        rows={2}
+        rows={3}
         autoFocus
         data-gramm="false"
         data-gramm_editor="false"
@@ -265,7 +265,7 @@ function PureMultimodalInput({
             event.preventDefault();
 
             if (isLoading) {
-              toast.error('Please wait for the model to finish its response!');
+              toast.error('Model yanıt verirken bekleyin!');
             } else {
               submitForm();
             }
