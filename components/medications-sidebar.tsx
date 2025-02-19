@@ -56,14 +56,6 @@ export function MedicationsSidebar({ user }: { user: User | undefined }) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <button
-        data-sidebar="rail"
-        aria-label="Toggle Sidebar"
-        tabIndex={-1}
-        onClick={toggleSidebar}
-        title="Toggle Sidebar"
-        className="absolute inset-y-0 left-0 z-20 hidden w-4 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border cursor-w-resize sm:flex"
-      />
     </RightSidebar>
   );
 } 
