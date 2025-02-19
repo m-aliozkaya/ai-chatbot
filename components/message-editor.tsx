@@ -1,22 +1,22 @@
 'use client';
 
-import { ChatRequestOptions, Message } from 'ai';
+import { type Message, type ChatRequestOptions } from 'ai';
+import { FormEvent, useRef, useState } from 'react';
 import { Button } from './ui/button';
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { Textarea } from './ui/textarea';
 import { deleteTrailingMessages } from '@/app/(chat)/actions';
 import { toast } from 'sonner';
 
-export type MessageEditorProps = {
+interface MessageEditorProps {
   message: Message;
-  setMode: Dispatch<SetStateAction<'view' | 'edit'>>;
+  setMode: (mode: 'view' | 'edit') => void;
   setMessages: (
     messages: Message[] | ((messages: Message[]) => Message[]),
   ) => void;
   reload: (
     chatRequestOptions?: ChatRequestOptions,
   ) => Promise<string | null | undefined>;
-};
+}
 
 export function MessageEditor({
   message,
@@ -24,81 +24,59 @@ export function MessageEditor({
   setMessages,
   reload,
 }: MessageEditorProps) {
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-  const [draftContent, setDraftContent] = useState<string>(message.content);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [content, setContent] = useState(message.content);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    if (textareaRef.current) {
-      adjustHeight();
-    }
-  }, []);
+  const handleSubmit = async () => {
+    if (!content) return;
 
-  const adjustHeight = () => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`;
-    }
-  };
+    setIsSubmitting(true);
 
-  const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDraftContent(event.target.value);
-    adjustHeight();
+    await deleteTrailingMessages({
+      id: message.id,
+    });
+
+    setMessages((messages) =>
+      messages.map((m) =>
+        m.id === message.id ? { ...m, content } : m,
+      ),
+    );
+    setMode('view');
+    await reload();
   };
 
   return (
-    <div className="flex flex-col gap-2 w-full">
+    <form
+      className="flex flex-col gap-3 w-full"
+      onSubmit={(e: FormEvent) => {
+        e.preventDefault();
+        handleSubmit();
+      }}
+    >
       <Textarea
         ref={textareaRef}
-        className="bg-transparent outline-none overflow-hidden resize-none !text-base rounded-xl w-full"
-        value={draftContent}
-        onChange={handleInput}
+        className="w-full resize-none bg-transparent outline-none"
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        data-gramm="false"
+        data-gramm_editor="false"
+        data-enable-grammarly="false"
       />
-
       <div className="flex flex-row gap-2 justify-end">
         <Button
-          variant="outline"
-          className="h-fit py-2 px-3"
+          type="button"
+          variant="ghost"
           onClick={() => {
             setMode('view');
           }}
         >
           Cancel
         </Button>
-        <Button
-          variant="default"
-          className="h-fit py-2 px-3"
-          disabled={isSubmitting}
-          onClick={async () => {
-            setIsSubmitting(true);
-
-            await deleteTrailingMessages({
-              id: message.id,
-            });
-
-            setMessages((messages) => {
-              const index = messages.findIndex((m) => m.id === message.id);
-
-              if (index !== -1) {
-                const updatedMessage = {
-                  ...message,
-                  content: draftContent,
-                };
-
-                return [...messages.slice(0, index), updatedMessage];
-              }
-
-              return messages;
-            });
-
-            setMode('view');
-            reload();
-          }}
-        >
-          {isSubmitting ? 'Sending...' : 'Send'}
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Sending...' : 'Save & Regenerate'}
         </Button>
       </div>
-    </div>
+    </form>
   );
 }

@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Button } from './ui/button';
 import { ChatRequestOptions, CreateMessage, Message } from 'ai';
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 interface SuggestedActionsProps {
   chatId: string;
@@ -14,6 +14,15 @@ interface SuggestedActionsProps {
 }
 
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
   const suggestedActions = [
     {
       title: 'What are the advantages',
@@ -37,8 +46,21 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
     },
   ];
 
+  if (!mounted) {
+    return (
+      <div className="grid sm:grid-cols-2 gap-2 w-full">
+        {[1, 2, 3, 4].map((index) => (
+          <div
+            key={index}
+            className="animate-pulse h-20 bg-muted-foreground/10 rounded-lg"
+          />
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div className="grid sm:grid-cols-2 gap-2 w-full">
+    <div className="grid sm:grid-cols-2 gap-2 w-full" suppressHydrationWarning>
       {suggestedActions.map((suggestedAction, index) => (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -59,6 +81,9 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
               });
             }}
             className="text-left border rounded-xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-start items-start"
+            data-gramm="false"
+            data-gramm_editor="false"
+            data-enable-grammarly="false"
           >
             <span className="font-medium">{suggestedAction.title}</span>
             <span className="text-muted-foreground">

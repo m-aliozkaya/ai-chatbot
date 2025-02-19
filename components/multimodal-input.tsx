@@ -67,6 +67,14 @@ function PureMultimodalInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -193,6 +201,14 @@ function PureMultimodalInput({
     [setAttachments],
   );
 
+  if (!mounted) {
+    return (
+      <div className="relative w-full flex flex-col gap-4">
+        <div className="animate-pulse h-24 bg-muted-foreground/10 rounded-lg" />
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full flex flex-col gap-4">
       {messages.length === 0 &&
@@ -241,6 +257,9 @@ function PureMultimodalInput({
         )}
         rows={2}
         autoFocus
+        data-gramm="false"
+        data-gramm_editor="false"
+        data-enable-grammarly="false"
         onKeyDown={(event) => {
           if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();

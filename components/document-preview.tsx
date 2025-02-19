@@ -7,6 +7,7 @@ import {
   useEffect,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 import { ArtifactKind, UIArtifact } from './artifact';
 import { FileIcon, FullscreenIcon, ImageIcon, LoaderIcon } from './icons';
@@ -34,6 +35,7 @@ export function DocumentPreview({
   args,
 }: DocumentPreviewProps) {
   const { artifact, setArtifact } = useArtifact();
+  const [mounted, setMounted] = useState(false);
 
   const { data: documents, isLoading: isDocumentsFetching } = useSWR<
     Array<Document>
@@ -43,6 +45,12 @@ export function DocumentPreview({
   const hitboxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    
     const boundingBox = hitboxRef.current?.getBoundingClientRect();
 
     if (artifact.documentId && boundingBox) {
@@ -56,7 +64,11 @@ export function DocumentPreview({
         },
       }));
     }
-  }, [artifact.documentId, setArtifact]);
+  }, [artifact.documentId, setArtifact, mounted]);
+
+  if (!mounted) {
+    return <LoadingSkeleton artifactKind={result?.kind ?? args?.kind ?? artifact.kind} />;
+  }
 
   if (artifact.isVisible) {
     if (result) {

@@ -3,7 +3,7 @@
 import type { ChatRequestOptions, Message } from 'ai';
 import cx from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
-import { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useState, useEffect } from 'react';
 
 import type { Vote } from '@/lib/db/schema';
 
@@ -47,7 +47,25 @@ const PurePreviewMessage = ({
   ) => Promise<string | null | undefined>;
   isReadonly: boolean;
 }) => {
+  const [mounted, setMounted] = useState(false);
   const [mode, setMode] = useState<'view' | 'edit'>('view');
+
+  useEffect(() => {
+    // Wait for next tick to ensure DOM is fully loaded
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Prevent hydration mismatch by not rendering until client-side
+  if (!mounted) {
+    return (
+      <div className="w-full mx-auto max-w-3xl px-4">
+        <div className="animate-pulse h-20 bg-muted-foreground/10 rounded-lg" />
+      </div>
+    );
+  }
 
   return (
     <AnimatePresence>
@@ -56,6 +74,7 @@ const PurePreviewMessage = ({
         initial={{ y: 5, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         data-role={message.role}
+        suppressHydrationWarning
       >
         <div
           className={cn(
