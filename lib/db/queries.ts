@@ -2,8 +2,9 @@ import 'server-only';
 
 import { genSaltSync, hashSync } from 'bcrypt-ts';
 import { and, asc, desc, eq, gt, gte, inArray } from 'drizzle-orm';
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/libsql';
+import { createClient } from '@libsql/client';
+import { nanoid } from 'nanoid';
 
 import {
   user,
@@ -22,8 +23,10 @@ import { ArtifactKind } from '@/components/artifact';
 // use the Drizzle adapter for Auth.js / NextAuth
 // https://authjs.dev/reference/adapter/drizzle
 
-// biome-ignore lint: Forbidden non-null assertion.
-const client = postgres(process.env.POSTGRES_URL!);
+const client = createClient({
+  url: 'file:sqlite.db',
+});
+
 const db = drizzle(client);
 
 export async function getUser(email: string): Promise<Array<User>> {
@@ -35,12 +38,22 @@ export async function getUser(email: string): Promise<Array<User>> {
   }
 }
 
-export async function createUser(email: string, password: string) {
-  const salt = genSaltSync(10);
-  const hash = hashSync(password, salt);
-
+export async function createUser(email: string, password: string): Promise<User> {
   try {
-    return await db.insert(user).values({ email, password: hash });
+    const salt = genSaltSync(10);
+    const hashedPassword = hashSync(password, salt);
+    const id = nanoid();
+
+    const [newUser] = await db
+      .insert(user)
+      .values({
+        id,
+        email,
+        password: hashedPassword,
+      })
+      .returning();
+
+    return newUser;
   } catch (error) {
     console.error('Failed to create user in database');
     throw error;
