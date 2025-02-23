@@ -1,13 +1,16 @@
 .container {
   padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .header {
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #333;
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .header h1 {
@@ -29,10 +32,13 @@
 }
 
 .section {
-  background: #242424;
-  padding: 1.5rem;
+  background: #1a1a1a;
   border-radius: 8px;
-  border: 1px solid #333;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
 }
 
 .section h2 {
@@ -44,19 +50,43 @@
 .section p {
   color: #d4d4d4;
   line-height: 1.6;
+  flex: 1;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  padding-right: 1rem;
+}
+
+.section p::-webkit-scrollbar {
+  width: 8px;
+}
+
+.section p::-webkit-scrollbar-track {
+  background: #333;
+  border-radius: 4px;
+}
+
+.section p::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 4px;
+}
+
+.section p::-webkit-scrollbar-thumb:hover {
+  background: #888;
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  display: flex;
   gap: 1.5rem;
+  justify-content: space-between;
 }
 
 .card {
-  background: #242424;
-  padding: 1.5rem;
+  background: #1a1a1a;
   border-radius: 8px;
-  border: 1px solid #333;
+  padding: 1.5rem;
+  flex: 1;
+  min-height: 200px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .card h3 {
@@ -79,4 +109,14 @@
 
 .card li:last-child {
   border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    flex-direction: column;
+  }
+  
+  .card {
+    min-height: auto;
+  }
 } 
