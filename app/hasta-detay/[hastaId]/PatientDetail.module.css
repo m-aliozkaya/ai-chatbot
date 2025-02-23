@@ -7,22 +7,23 @@
 }
 
 .header {
-  background: #1a1a1a;
+  background: var(--card-background, #1a1a1a);
   border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color, #333);
 }
 
 .header h1 {
   font-size: 2rem;
-  color: #ffffff;
+  color: var(--text-primary, #ffffff);
   margin-bottom: 0.5rem;
 }
 
 .patientInfo {
   display: flex;
   gap: 2rem;
-  color: #888;
+  color: var(--text-secondary, #888);
 }
 
 .content {
@@ -32,23 +33,24 @@
 }
 
 .section {
-  background: #1a1a1a;
+  background: var(--card-background, #1a1a1a);
   border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   min-height: 300px;
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--border-color, #333);
 }
 
 .section h2 {
-  color: #ffffff;
+  color: var(--text-primary, #ffffff);
   margin-bottom: 1rem;
   font-size: 1.5rem;
 }
 
 .section p {
-  color: #d4d4d4;
+  color: var(--text-primary, #d4d4d4);
   line-height: 1.6;
   flex: 1;
   white-space: pre-wrap;
@@ -61,17 +63,17 @@
 }
 
 .section p::-webkit-scrollbar-track {
-  background: #333;
+  background: var(--scrollbar-track, #333);
   border-radius: 4px;
 }
 
 .section p::-webkit-scrollbar-thumb {
-  background: #666;
+  background: var(--scrollbar-thumb, #666);
   border-radius: 4px;
 }
 
 .section p::-webkit-scrollbar-thumb:hover {
-  background: #888;
+  background: var(--scrollbar-thumb-hover, #888);
 }
 
 .grid {
@@ -81,16 +83,17 @@
 }
 
 .card {
-  background: #1a1a1a;
+  background: var(--card-background, #1a1a1a);
   border-radius: 8px;
   padding: 1.5rem;
   flex: 1;
   min-height: 200px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color, #333);
 }
 
 .card h3 {
-  color: #ffffff;
+  color: var(--text-primary, #ffffff);
   margin-bottom: 1rem;
   font-size: 1.25rem;
 }
@@ -102,13 +105,33 @@
 }
 
 .card li {
-  color: #d4d4d4;
+  color: var(--text-primary, #d4d4d4);
   padding: 0.5rem 0;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border-color, #333);
 }
 
 .card li:last-child {
   border-bottom: none;
+}
+
+:global(.light) {
+  --card-background: #ffffff;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666;
+  --border-color: #e5e5e5;
+  --scrollbar-track: #f1f1f1;
+  --scrollbar-thumb: #c1c1c1;
+  --scrollbar-thumb-hover: #a1a1a1;
+}
+
+:global(.dark) {
+  --card-background: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #888;
+  --border-color: #333;
+  --scrollbar-track: #333;
+  --scrollbar-thumb: #666;
+  --scrollbar-thumb-hover: #888;
 }
 
 @media (max-width: 768px) {
