@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 
 import { AppSidebar } from '@/components/app-sidebar';
-import { MedicationsSidebar } from '@/components/medications-sidebar';
+import { AssistantChatSidebar } from '@/components/medications-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { RightSidebarProvider } from '@/components/ui/right-sidebar-context';
 import { ChatHeader } from '@/components/chat-header';
@@ -27,7 +27,7 @@ export default async function Layout({
               <ChatHeader />
               {children}
             </SidebarInset>
-            <MedicationsSidebar user={session?.user} />
+            <AssistantChatSidebar user={session?.user} />
           </div>
         </RightSidebarProvider>
       </SidebarProvider>

@@ -50,7 +50,7 @@ export function MedicationsToggle() {
             <SidebarRightIcon size={16} />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="left">Toggle Medications</TooltipContent>
+        <TooltipContent side="left">Toggle Assistant Chat</TooltipContent>
       </Tooltip>
     </div>
   );

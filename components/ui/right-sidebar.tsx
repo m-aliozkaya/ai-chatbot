@@ -6,8 +6,8 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRightSidebar } from './right-sidebar-context';
 
-const SIDEBAR_WIDTH = '16rem';
-const SIDEBAR_WIDTH_MOBILE = '18rem';
+const SIDEBAR_WIDTH = '32rem';
+const SIDEBAR_WIDTH_MOBILE = '32rem';
 
 export function RightSidebar({
   children,

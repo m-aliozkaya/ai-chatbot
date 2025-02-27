@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers';
 
 import { AppSidebar } from '@/components/app-sidebar';
-import { MedicationsSidebar } from '@/components/medications-sidebar';
+import { AssistantChatSidebar } from '@/components/medications-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { RightSidebarProvider } from '@/components/ui/right-sidebar-context';
 
@@ -31,7 +31,7 @@ export default async function Layout({
             <div className="flex w-full">
               <AppSidebar user={session?.user} />
               <SidebarInset>{children}</SidebarInset>
-              <MedicationsSidebar user={session?.user} />
+              <AssistantChatSidebar user={session?.user} />
             </div>
           </RightSidebarProvider>
         </SidebarProvider>
