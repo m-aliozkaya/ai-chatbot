@@ -240,8 +240,7 @@ Hasta Geçmişi: ${patient.history}`,
       
       {/* Input container */}
       <div className="mt-auto pt-2 px-2 pb-2 border-t bg-background">
-        <div className="rounded-lg border p-2">
-          <SidebarMultimodalInput
+      <SidebarMultimodalInput
             chatId={id}
             input={input}
             setInput={setInput}
@@ -254,7 +253,6 @@ Hasta Geçmişi: ${patient.history}`,
             setMessages={setMessages}
             append={append}
           />
-        </div>
       </div>
     </div>
   );
