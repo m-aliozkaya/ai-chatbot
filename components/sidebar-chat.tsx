@@ -223,7 +223,7 @@ Hasta Geçmişi: ${patient.history}`,
       messages={messages}
       setMessages={setMessages}
       reload={reload}
-      isReadonly={false}
+      isReadonly={true}
       isArtifactVisible={false}
     />
   ), [id, isLoading, messages, reload]);
