@@ -91,10 +91,18 @@ Hasta Geçmişi: ${patient.history}`,
   }, [patient]);
 
   // Use local state instead of useChat hook
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+  
+  // Initialize messages when component mounts or patient changes
+  useEffect(() => {
+    setMessages(initialMessages);
+    setInput('');
+    setIsLoading(false);
+    setAttachments([]);
+  }, [initialMessages, hastaId]);
 
   // Scroll to bottom when messages change - optimize edilmiş versiyon
   const scrollToBottom = useCallback(() => {
@@ -110,14 +118,6 @@ Hasta Geçmişi: ${patient.history}`,
   useEffect(() => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
-
-  // Reset messages when patient changes
-  useEffect(() => {
-    setMessages(initialMessages);
-    setInput('');
-    setIsLoading(false);
-    setAttachments([]);
-  }, [hastaId, initialMessages]);
 
   // Custom handleSubmit function that uses local state
   const handleSubmit = useCallback((
@@ -229,7 +229,7 @@ Hasta Geçmişi: ${patient.history}`,
   ), [id, isLoading, messages, reload]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" key={hastaId}>
       {/* Messages container */}
       <div className="flex-1 relative">
         <div className="absolute inset-0 overflow-y-auto px-2 pb-4 will-change-scroll overscroll-behavior-y-contain">
