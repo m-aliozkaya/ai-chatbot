@@ -226,16 +226,18 @@ Hasta Geçmişi: ${patient.history}`,
   ), [id, isLoading, messages, reload]);
 
   return (
-    <div className="flex flex-col h-full relative">
-      {/* Messages container with scroll */}
-      <div className="absolute inset-x-0 top-0 bottom-[80px] overflow-y-auto px-2">
-        {messagesComponent}
-        <div ref={messagesEndRef} className="h-4" />
+    <div className="flex flex-col h-full">
+      {/* Messages container */}
+      <div className="flex-1 relative">
+        <div className="absolute inset-0 overflow-y-auto px-2 pb-4">
+          {messagesComponent}
+          <div ref={messagesEndRef} className="h-4" />
+        </div>
       </div>
       
-      {/* Fixed input at bottom */}
-      <div className="absolute inset-x-0 bottom-0 p-2">
-        <div className="p-3 bg-background rounded-lg border">
+      {/* Input container */}
+      <div className="mt-auto pt-2 px-2 pb-2 border-t bg-background">
+        <div className="rounded-lg border p-2">
           <SidebarMultimodalInput
             chatId={id}
             input={input}
