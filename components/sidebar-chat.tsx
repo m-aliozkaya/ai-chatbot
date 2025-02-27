@@ -108,6 +108,14 @@ Hasta Geçmişi: ${patient.history}`,
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
+  // Reset messages when patient changes
+  useEffect(() => {
+    setMessages(initialMessages);
+    setInput('');
+    setIsLoading(false);
+    setAttachments([]);
+  }, [hastaId, initialMessages]);
+
   // Custom handleSubmit function that uses local state
   const handleSubmit = useCallback((
     event?: { preventDefault?: () => void } | undefined,
