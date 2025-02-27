@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { generateUUID } from '@/lib/utils';
 import { Messages } from './messages';
 import { MultimodalInput } from './multimodal-input';
 import { Attachment, ChatRequestOptions, Message } from 'ai';
@@ -50,10 +49,10 @@ function SidebarMultimodalInput(props: any) {
 }
 
 export function SidebarChat() {
-  const id = generateUUID();
   const pathname = usePathname();
   const hastaId = pathname.split('/').pop();
-  const patient = mockPatients.find(p => p.id === parseInt(hastaId || '0'));
+  const patientId = parseInt(hastaId || '0');
+  const patient = mockPatients.find(p => p.id === patientId);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Memoize initial messages to prevent re-renders
@@ -62,12 +61,12 @@ export function SidebarChat() {
     
     return [
       {
-        id: generateUUID(),
+        id: `user_initial_${patientId}`,
         role: 'user' as const,
         content: `${patient.name} isimli hastanın sağlık durumu nedir?`,
       },
       {
-        id: generateUUID(),
+        id: `assistant_initial_${patientId}`,
         role: 'assistant' as const,
         content: `${patient.name} (${patient.age}/${patient.gender.toLowerCase()}) hastamızın mevcut durumu:
 
@@ -78,23 +77,24 @@ export function SidebarChat() {
 Hasta Geçmişi: ${patient.history}`,
       },
       {
-        id: generateUUID(),
+        id: `user_tests_${patientId}`,
         role: 'user' as const,
         content: `En son yapılan testlerin sonuçları nasıl?`,
       },
       {
-        id: generateUUID(),
+        id: `assistant_tests_${patientId}`,
         role: 'assistant' as const,
         content: `${patient.tests.join(' ve ')} testleri düzenli olarak yapılıyor ve takip ediliyor. Detaylı test sonuçları için laboratuvar raporlarını inceleyebilirsiniz.`,
       }
     ];
-  }, [patient]);
+  }, [patient, patientId]);
 
   // Use local state instead of useChat hook
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [messageCounter, setMessageCounter] = useState(0);
   
   // Initialize messages when component mounts or patient changes
   useEffect(() => {
@@ -102,6 +102,7 @@ Hasta Geçmişi: ${patient.history}`,
     setInput('');
     setIsLoading(false);
     setAttachments([]);
+    setMessageCounter(0);
   }, [initialMessages, hastaId]);
 
   // Scroll to bottom when messages change - optimize edilmiş versiyon
@@ -130,9 +131,13 @@ Hasta Geçmişi: ${patient.history}`,
     
     if (!input.trim()) return;
     
-    // Add user message
+    // Increment message counter for unique IDs
+    const newCounter = messageCounter + 1;
+    setMessageCounter(newCounter);
+    
+    // Add user message with patient ID-based identifier
     const userMessage: Message = {
-      id: generateUUID(),
+      id: `user_${patientId}_${newCounter}`,
       role: 'user',
       content: input,
     };
@@ -150,7 +155,7 @@ Hasta Geçmişi: ${patient.history}`,
     setTimeout(() => {
       // Add assistant response based on the input
       const assistantResponse: Message = {
-        id: generateUUID(),
+        id: `assistant_${patientId}_${newCounter}`,
         role: 'assistant',
         content: getAssistantResponse(input, patient),
       };
@@ -161,7 +166,7 @@ Hasta Geçmişi: ${patient.history}`,
     }, 500);
     
     return false;
-  }, [input, patient]);
+  }, [input, patient, patientId, messageCounter]);
 
   // Function to generate assistant responses based on input
   const getAssistantResponse = (userInput: string, patient: any) => {
@@ -217,7 +222,7 @@ Hasta Geçmişi: ${patient.history}`,
   // Memoize the Messages component to prevent re-renders
   const messagesComponent = useMemo(() => (
     <Messages
-      chatId={id}
+      chatId={patientId.toString()}
       isLoading={isLoading}
       votes={[]}
       messages={messages}
@@ -226,7 +231,7 @@ Hasta Geçmişi: ${patient.history}`,
       isReadonly={true}
       isArtifactVisible={false}
     />
-  ), [id, isLoading, messages, reload]);
+  ), [patientId, isLoading, messages, reload]);
 
   return (
     <div className="flex flex-col h-full" key={hastaId}>
@@ -241,7 +246,7 @@ Hasta Geçmişi: ${patient.history}`,
       {/* Input container */}
       <div className="mt-auto pt-2 px-2 pb-2 border-t bg-background">
       <SidebarMultimodalInput
-            chatId={id}
+            chatId={patientId.toString()}
             input={input}
             setInput={setInput}
             handleSubmit={handleSubmit}
