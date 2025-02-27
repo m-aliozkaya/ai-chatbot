@@ -1,12 +1,10 @@
 'use client';
 
-import { useChat } from 'ai/react';
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import { toast } from 'sonner';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { generateUUID } from '@/lib/utils';
 import { Messages } from './messages';
 import { MultimodalInput } from './multimodal-input';
-import { Attachment, ChatRequestOptions } from 'ai';
+import { Attachment, ChatRequestOptions, Message } from 'ai';
 import { usePathname } from 'next/navigation';
 import { mockPatients } from '@/app/data/mockPatients';
 
@@ -56,6 +54,7 @@ export function SidebarChat() {
   const pathname = usePathname();
   const hastaId = pathname.split('/').pop();
   const patient = mockPatients.find(p => p.id === parseInt(hastaId || '0'));
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Memoize initial messages to prevent re-renders
   const initialMessages = useMemo(() => {
@@ -91,29 +90,102 @@ Hasta Geçmişi: ${patient.history}`,
     ];
   }, [patient]);
 
-  const {
-    messages,
-    setMessages,
-    handleSubmit,
-    input,
-    setInput,
-    append,
-    isLoading,
-    stop,
-    reload,
-  } = useChat({
-    id,
-    body: { id },
-    initialMessages,
-    experimental_throttle: 100,
-    sendExtraMessageFields: true,
-    generateId: generateUUID,
-    onError: (error) => {
-      toast.error('An error occurred, please try again!');
-    },
-  });
-
+  // Use local state instead of useChat hook
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+
+  // Scroll to bottom when messages change
+  const scrollToBottom = useCallback(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
+
+  // Auto-scroll when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
+
+  // Custom handleSubmit function that uses local state
+  const handleSubmit = useCallback((
+    event?: { preventDefault?: () => void } | undefined,
+    chatRequestOptions?: ChatRequestOptions
+  ) => {
+    if (event?.preventDefault) {
+      event.preventDefault();
+    }
+    
+    if (!input.trim()) return;
+    
+    // Add user message
+    const userMessage: Message = {
+      id: generateUUID(),
+      role: 'user',
+      content: input,
+    };
+    
+    // Set loading state
+    setIsLoading(true);
+    
+    // Add user message immediately
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Clear input right away
+    setInput('');
+    
+    // Simulate a delay for the assistant response
+    setTimeout(() => {
+      // Add assistant response based on the input
+      const assistantResponse: Message = {
+        id: generateUUID(),
+        role: 'assistant',
+        content: getAssistantResponse(input, patient),
+      };
+      
+      // Update messages with assistant response
+      setMessages(prev => [...prev, assistantResponse]);
+      setIsLoading(false);
+    }, 500);
+    
+    return false;
+  }, [input, patient]);
+
+  // Function to generate assistant responses based on input
+  const getAssistantResponse = (userInput: string, patient: any) => {
+    if (!patient) return "Hasta bilgisi bulunamadı.";
+    
+    const input = userInput.toLowerCase();
+    
+    if (input.includes('teşhis') || input.includes('tanı')) {
+      return `${patient.name} için konulan teşhisler: ${patient.diagnosis.join(', ')}`;
+    }
+    
+    if (input.includes('tedavi') || input.includes('ilaç')) {
+      return `${patient.name} için uygulanan tedaviler: ${patient.treatments.join(', ')}`;
+    }
+    
+    if (input.includes('test') || input.includes('sonuç')) {
+      return `${patient.name} için yapılan testler: ${patient.tests.join(', ')}. Detaylı sonuçlar için laboratuvar raporlarını inceleyebilirsiniz.`;
+    }
+    
+    if (input.includes('öykü') || input.includes('geçmiş') || input.includes('hikaye')) {
+      return `${patient.name}'ın hasta öyküsü: ${patient.history}`;
+    }
+    
+    return `${patient.name} hakkında başka bir sorunuz var mı? Teşhisler, tedaviler, testler veya hasta öyküsü hakkında bilgi verebilirim.`;
+  };
+
+  // Mock functions for compatibility with Messages component
+  const reload = useCallback(() => {
+    return Promise.resolve(null);
+  }, []);
+  const stop = useCallback(() => {}, []);
+  const append = useCallback((message: Message) => {
+    setMessages(prev => [...prev, message]);
+    return Promise.resolve(message.id);
+  }, []);
 
   // Override window.history.replaceState to prevent URL navigation
   useEffect(() => {
@@ -143,30 +215,33 @@ Hasta Geçmişi: ${patient.history}`,
       isReadonly={false}
       isArtifactVisible={false}
     />
-  ), [id, isLoading, messages, setMessages, reload]);
+  ), [id, isLoading, messages, reload]);
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-hidden bg-background rounded-lg mx-2">
-        <div className="h-full overflow-hidden">
-          {messagesComponent}
-        </div>
+    <div className="flex flex-col h-full relative">
+      {/* Messages container with scroll */}
+      <div className="absolute inset-x-0 top-0 bottom-[80px] overflow-y-auto px-2">
+        {messagesComponent}
+        <div ref={messagesEndRef} className="h-4" />
       </div>
-
-      <div className="p-4 mt-auto bg-background mx-2 mb-2 rounded-lg border" onClick={(e) => e.preventDefault()}>
-        <SidebarMultimodalInput
-          chatId={id}
-          input={input}
-          setInput={setInput}
-          handleSubmit={handleSubmit}
-          isLoading={isLoading}
-          stop={stop}
-          attachments={attachments}
-          setAttachments={setAttachments}
-          messages={messages}
-          setMessages={setMessages}
-          append={append}
-        />
+      
+      {/* Fixed input at bottom */}
+      <div className="absolute inset-x-0 bottom-0 p-2">
+        <div className="p-3 bg-background rounded-lg border">
+          <SidebarMultimodalInput
+            chatId={id}
+            input={input}
+            setInput={setInput}
+            handleSubmit={handleSubmit}
+            isLoading={isLoading}
+            stop={stop}
+            attachments={attachments}
+            setAttachments={setAttachments}
+            messages={messages}
+            setMessages={setMessages}
+            append={append}
+          />
+        </div>
       </div>
     </div>
   );
