@@ -12,15 +12,24 @@ export function useScrollToBottom<T extends HTMLElement>(): [
     const end = endRef.current;
 
     if (container && end) {
-      const observer = new MutationObserver(() => {
-        end.scrollIntoView({ behavior: 'instant', block: 'end' });
+      const observer = new MutationObserver((mutations) => {
+        const shouldScroll = mutations.some(mutation => 
+          mutation.type === 'childList' || 
+          (mutation.type === 'characterData' && mutation.target.nodeType === Node.TEXT_NODE)
+        );
+        
+        if (shouldScroll) {
+          requestAnimationFrame(() => {
+            end.scrollIntoView({ behavior: 'auto', block: 'end' });
+          });
+        }
       });
 
       observer.observe(container, {
         childList: true,
         subtree: true,
-        attributes: true,
         characterData: true,
+        attributes: false,
       });
 
       return () => observer.disconnect();

@@ -96,10 +96,13 @@ Hasta Geçmişi: ${patient.history}`,
   const [isLoading, setIsLoading] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom when messages change - optimize edilmiş versiyon
   const scrollToBottom = useCallback(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      // requestAnimationFrame ile scroll işlemini optimize et
+      requestAnimationFrame(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'auto', block: 'end' });
+      });
     }
   }, []);
 
@@ -229,7 +232,7 @@ Hasta Geçmişi: ${patient.history}`,
     <div className="flex flex-col h-full">
       {/* Messages container */}
       <div className="flex-1 relative">
-        <div className="absolute inset-0 overflow-y-auto px-2 pb-4">
+        <div className="absolute inset-0 overflow-y-auto px-2 pb-4 will-change-scroll overscroll-behavior-y-contain">
           {messagesComponent}
           <div ref={messagesEndRef} className="h-4" />
         </div>
