@@ -48,7 +48,7 @@ export function SidebarUserNav({ user }: { user: User }) {
                   });
                 }}
               >
-                Sign out
+                Çıkış Yap
               </button>
             </DropdownMenuItem>
           </DropdownMenuContent>

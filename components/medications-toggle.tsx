@@ -38,7 +38,7 @@ export function MedicationsToggle() {
             {theme === 'dark' ? <SunIcon size={16} /> : <MoonIcon size={16} />}
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="left">Toggle theme</TooltipContent>
+        <TooltipContent side="left">Temayı Değiştir</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
@@ -50,7 +50,7 @@ export function MedicationsToggle() {
             <SidebarRightIcon size={16} />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="left">Toggle Assistant Chat</TooltipContent>
+        <TooltipContent side="left">Asistan Sohbetini Aç/Kapat</TooltipContent>
       </Tooltip>
     </div>
   );
