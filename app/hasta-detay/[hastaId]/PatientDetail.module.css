@@ -117,6 +117,48 @@
   border-bottom: none;
 }
 
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.editButton {
+  background-color: var(--card-background, #1a1a1a);
+  color: var(--text-primary, #ffffff);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.editButton:hover {
+  background-color: var(--border-color, #333);
+}
+
+.historyTextarea {
+  width: 100%;
+  background-color: var(--card-background, #1a1a1a);
+  color: var(--text-primary, #ffffff);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 4px;
+  padding: 0.75rem;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 150px;
+}
+
+.historyTextarea:focus {
+  outline: none;
+  border-color: #0070f3;
+  box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.25);
+}
+
 :global(.light) {
   --card-background: #ffffff;
   --text-primary: #1a1a1a;

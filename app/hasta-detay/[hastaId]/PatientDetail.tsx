@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { mockPatients } from '@/app/data/mockPatients';
 import styles from './PatientDetail.module.css';
 import { Session } from 'next-auth';
@@ -12,10 +12,19 @@ interface PatientDetailProps {
 
 export function PatientDetail({ session, hastaId }: PatientDetailProps) {
   const patient = mockPatients.find(p => p.id === parseInt(hastaId));
+  const [isEditing, setIsEditing] = useState(false);
+  const [patientHistory, setPatientHistory] = useState(patient?.history || '');
 
   if (!patient) {
     return <div className="p-4">Hasta bulunamadı.</div>;
   }
+
+  const handleSave = () => {
+    // In a real application, you would save this to your database
+    // For now, we'll just update the local state and exit edit mode
+    patient.history = patientHistory;
+    setIsEditing(false);
+  };
 
   return (
     <div className={styles.container}>
@@ -31,8 +40,25 @@ export function PatientDetail({ session, hastaId }: PatientDetailProps) {
       </div>
 
       <div className={styles.section}>
-        <h2>Hasta Öyküsü</h2>
-        <p>{patient.history}</p>
+        <div className={styles.sectionHeader}>
+          <h2>Hasta Öyküsü</h2>
+          <button 
+            onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+            className={styles.editButton}
+          >
+            {isEditing ? 'Kaydet' : 'Düzenle'}
+          </button>
+        </div>
+        {isEditing ? (
+          <textarea
+            value={patientHistory}
+            onChange={(e) => setPatientHistory(e.target.value)}
+            className={styles.historyTextarea}
+            rows={5}
+          />
+        ) : (
+          <p>{patient.history}</p>
+        )}
       </div>
       
       <div className={styles.grid}>
